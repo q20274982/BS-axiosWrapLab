@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+
+		<!-- toastr -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+		/>
+	</head>
+	<body>
+		<!-- axios -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0/axios.min.js"></script>
+
+		<!-- cookie.js -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"
+			integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+
+		<!-- jquery -->
+		<!-- toastr 的依賴 -->
+		<script
+			src="https://code.jquery.com/jquery-3.6.1.min.js"
+			integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+			crossorigin="anonymous"
+		></script>
+
+		<!-- toastr -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+		<!-- 封裝的 axios V1 -->
+		<script src="./request.js"></script>
+
+		<script>
+			const api = {
+				signIn: '/Token/signin',
+				claims: '/Token/claims',
+				userName: '/Token/username'
+			}
+
+			const apiCaller = {
+				signIn: (data = {}) => request.post(api.signIn, data),
+				claims: () => request.get(api.claims),
+				userName: () => request.get(api.userName)
+			}
+
+			const setToken = (token, expire) =>
+				Cookies.set('token', token, {
+					expires: new Date(expire * 1000)
+				})
+
+			apiCaller
+				.signIn({
+					username: '煞氣a',
+					password: '1314520'
+				})
+				.then((res) => {
+					console.log(res)
+					if (res.isSuccess) {
+						const { expireTime, token } = res.body
+						setToken(token, expireTime)
+					}
+
+					return apiCaller.userName()
+				})
+				.then((res) => {
+					return apiCaller.claims()
+				})
+		</script>
+	</body>
+</html>
